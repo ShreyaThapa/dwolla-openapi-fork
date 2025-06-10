@@ -48,6 +48,7 @@ jobs:
           name: openapi-spec
           path: openapi.yml
           if-no-files-found: error
+        continue-on-error: false
 
   commit-bundle:
     name: Commit bundle
@@ -73,3 +74,4 @@ jobs:
           git config --global user.email 'action@github.com'
           git add openapi.yml
           git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update bundled openapi.yml" && git push)
+        continue-on-error: false
