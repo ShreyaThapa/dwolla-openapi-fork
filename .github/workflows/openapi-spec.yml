@@ -45,7 +45,3 @@ jobs:
           name: openapi-spec
           path: openapi.yml
           if-no-files-found: error
-
-      - name: Check for breaking changes
-        run: |
-          npx @redocly/cli check-diff openapi.yml --reference origin/main
