@@ -49,8 +49,8 @@ jobs:
           path: openapi.yml
           if-no-files-found: error
 
-  update:
-    name: Update
+  commit-bundle:
+    name: Commit bundle
     needs: bundle-and-validate
     runs-on: ubuntu-latest
     permissions:
