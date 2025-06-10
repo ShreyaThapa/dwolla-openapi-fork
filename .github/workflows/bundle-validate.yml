@@ -48,6 +48,7 @@ jobs:
           name: openapi-spec
           path: openapi.yml
           if-no-files-found: error
+        continue-on-error: false
 
   commit-bundle:
     name: Commit bundle
