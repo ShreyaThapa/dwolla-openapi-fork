@@ -7,10 +7,12 @@ on:
       - '.github/workflows/openapi-spec.yml'
 
 jobs:
-  validate-and-bundle:
+  bundle-and-validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -27,7 +29,7 @@ jobs:
         run: |
           npx @redocly/cli bundle specs/spec.yml -o openapi.yml
 
-      - name: Validate OpenAPI spec
+      - name: Run Redocly linter
         run: |
           npx @redocly/cli lint openapi.yml
 
@@ -45,3 +47,27 @@ jobs:
           name: openapi-spec
           path: openapi.yml
           if-no-files-found: error
+
+  update:
+    needs: bundle-and-validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download bundled spec
+        uses: actions/download-artifact@v4
+        with:
+          name: openapi-spec
+          path: .
+
+      - name: Commit Bundled API Spec
+        run: |
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add openapi.yml
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update bundled openapi.yml" && git push)
